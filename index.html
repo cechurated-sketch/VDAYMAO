@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will you be my Valentine? 💜</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #0a3d5c 0%, #1a5f7a 50%, #2d8ba8 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Animated stars background */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        /* Magic carpet floating animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+        }
+
+        .magic-lamp {
+            position: absolute;
+            font-size: 60px;
+            animation: float 3s ease-in-out infinite;
+            opacity: 0.3;
+        }
+
+        /* Initial Question Screen */
+        .question-screen {
+            text-align: center;
+            color: #ffd700;
+            opacity: 1;
+            transition: opacity 1s ease-out;
+        }
+
+        .question-screen.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .question-screen h1 {
+            font-size: 3em;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(64, 224, 208, 0.5);
+            animation: glow 2s ease-in-out infinite;
+            color: #40E0D0;
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 20px rgba(64, 224, 208, 0.5); }
+            50% { text-shadow: 0 0 30px rgba(64, 224, 208, 0.8); }
+        }
+
+        .question-screen p {
+            font-size: 1.5em;
+            margin-bottom: 40px;
+            color: #b3f0e6;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .yes-button {
+            background: linear-gradient(135deg, #40E0D0 0%, #48D1CC 100%);
+            color: #0a3d5c;
+            border: none;
+            padding: 20px 60px;
+            font-size: 1.5em;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(64, 224, 208, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .yes-button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(64, 224, 208, 0.6);
+        }
+
+        .yes-button:active {
+            transform: scale(0.95);
+        }
+
+        .no-button {
+            background: linear-gradient(135deg, #ff6b9d 0%, #ff8fab 100%);
+            color: white;
+            border: none;
+            padding: 20px 60px;
+            font-size: 1.5em;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(255, 107, 157, 0.4);
+            transition: all 0.3s ease;
+            position: absolute;
+        }
+
+        .no-button:hover {
+            background: linear-gradient(135deg, #ff8fab 0%, #ffa5bf 100%);
+        }
+
+        /* Letter Screen */
+        .letter-screen {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease-in;
+        }
+
+        .letter-screen.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .envelope {
+            width: 300px;
+            height: 200px;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .envelope:hover {
+            transform: scale(1.05);
+        }
+
+        .envelope-back {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #f0f8ff 0%, #e0f4f4 100%);
+            border: 3px solid #40E0D0;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .envelope-flap {
+            width: 0;
+            height: 0;
+            border-left: 150px solid transparent;
+            border-right: 150px solid transparent;
+            border-top: 100px solid #40E0D0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-origin: top center;
+            transition: transform 0.6s ease;
+            border-top-color: #48D1CC;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .envelope.open .envelope-flap {
+            transform: rotateX(180deg);
+        }
+
+        .heart-seal {
+            width: 40px;
+            height: 40px;
+            background: #ff6b9d;
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            clip-path: path('M12,21.35L10.55,20.03C5.4,15.36 2,12.27 2,8.5C2,5.41 4.42,3 7.5,3C9.24,3 10.91,3.81 12,5.08C13.09,3.81 14.76,3 16.5,3C19.58,3 22,5.41 22,8.5C22,12.27 18.6,15.36 13.45,20.03L12,21.35Z');
+            z-index: 10;
+        }
+
+        .to-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2em;
+            color: #0a3d5c;
+            font-family: 'Brush Script MT', cursive;
+        }
+
+        /* Card Screen */
+        .card-screen {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease-in;
+            perspective: 1000px;
+        }
+
+        .card-screen.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .card-container {
+            width: 400px;
+            height: 300px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s ease;
+        }
+
+        .card.open {
+            transform: rotateY(-180deg);
+        }
+
+        .card-front, .card-inside {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            backface-visibility: hidden;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #f0f8ff 0%, #e0f4f4 100%);
+            border: 3px solid #40E0D0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .card-front h2 {
+            font-size: 2em;
+            color: #0a3d5c;
+            margin-bottom: 10px;
+        }
+
+        .card-front .valentine-text {
+            font-size: 3em;
+            background: linear-gradient(45deg, #ff6b9d, #40E0D0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+            font-family: 'Brush Script MT', cursive;
+        }
+
+        .card-front .day-text {
+            font-size: 1.5em;
+            color: #0a3d5c;
+            margin-top: 10px;
+        }
+
+        .card-inside {
+            background: linear-gradient(135deg, #fff 0%, #f0f8ff 100%);
+            border: 3px solid #40E0D0;
+            transform: rotateY(180deg);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+        }
+
+        .card-inside .date {
+            font-size: 1em;
+            color: #666;
+            margin-bottom: 20px;
+            align-self: flex-start;
+        }
+
+        .card-inside .message {
+            font-size: 1.2em;
+            color: #333;
+            line-height: 1.8;
+            text-align: left;
+            font-family: 'Georgia', serif;
+        }
+
+        .card-inside .signature {
+            margin-top: 20px;
+            font-size: 1.1em;
+            color: #666;
+            align-self: flex-end;
+            font-style: italic;
+        }
+
+        /* Opened Card View */
+        .opened-card-screen {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1s ease-in;
+        }
+
+        .opened-card-screen.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .opened-card {
+            width: 800px;
+            height: 400px;
+            display: flex;
+            position: relative;
+        }
+
+        .card-left, .card-right {
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(135deg, #f0f8ff 0%, #e0f4f4 100%);
+            border: 3px solid #40E0D0;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            padding: 40px;
+        }
+
+        .card-left {
+            border-right: none;
+            border-radius: 10px 0 0 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-right {
+            border-left: 1.5px solid #40E0D0;
+            border-radius: 0 10px 10px 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .card-left .decorative {
+            font-size: 8em;
+            opacity: 0.3;
+        }
+
+        .card-right .date {
+            font-size: 1em;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .card-right .message {
+            font-size: 1.3em;
+            color: #333;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        .card-right .signature {
+            font-size: 1.2em;
+            color: #666;
+            font-style: italic;
+            align-self: flex-end;
+        }
+
+        /* Audio control */
+        .audio-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(64, 224, 208, 0.2);
+            border: 2px solid #40E0D0;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .audio-control:hover {
+            background: rgba(64, 224, 208, 0.4);
+            transform: scale(1.1);
+        }
+
+        /* Instructions */
+        .instruction {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #40E0D0;
+            font-size: 1.1em;
+            opacity: 0.7;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .question-screen h1 {
+                font-size: 2em;
+                padding: 0 20px;
+            }
+
+            .question-screen p {
+                font-size: 1.2em;
+                padding: 0 20px;
+            }
+
+            .button-container {
+                flex-direction: column;
+                gap: 20px;
+                padding: 0 20px;
+            }
+
+            .yes-button, .no-button {
+                font-size: 1.2em;
+                padding: 15px 40px;
+                width: 100%;
+                max-width: 250px;
+            }
+
+            .no-button {
+                position: fixed !important;
+            }
+
+            .envelope {
+                width: 250px;
+                height: 166px;
+            }
+
+            .envelope-flap {
+                border-left: 125px solid transparent;
+                border-right: 125px solid transparent;
+                border-top: 83px solid #40E0D0;
+            }
+
+            .card-container {
+                width: 90vw;
+                max-width: 350px;
+                height: 260px;
+            }
+
+            .card-front h2 {
+                font-size: 1.5em;
+            }
+
+            .card-front .valentine-text {
+                font-size: 2.2em;
+            }
+
+            .card-front .day-text {
+                font-size: 1.2em;
+            }
+
+            .opened-card {
+                width: 90vw;
+                max-width: 700px;
+                height: auto;
+                min-height: 350px;
+                flex-direction: column;
+            }
+
+            .card-left, .card-right {
+                width: 100%;
+                height: auto;
+                min-height: 175px;
+            }
+
+            .card-left {
+                border-right: 3px solid #40E0D0;
+                border-bottom: none;
+                border-radius: 10px 10px 0 0;
+            }
+
+            .card-right {
+                border-left: 3px solid #40E0D0;
+                border-top: 1.5px solid #40E0D0;
+                border-radius: 0 0 10px 10px;
+            }
+
+            .card-left .decorative {
+                font-size: 4em;
+            }
+
+            .card-right .message {
+                font-size: 1.1em;
+            }
+
+            .magic-lamp {
+                font-size: 40px;
+            }
+
+            .instruction {
+                font-size: 0.9em;
+                bottom: 10px;
+            }
+
+            .audio-control {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+        }
+
+        /* Prevent text selection on buttons */
+        .yes-button, .no-button {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Confetti Celebration Animation */
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .confetti-container.show {
+            opacity: 1;
+        }
+
+        .confetti {
+            position: absolute;
+            font-size: 30px;
+            animation: confetti-fall 3s ease-out forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes confetti-spin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        .chocolate {
+            animation: confetti-fall 2.5s ease-out forwards, confetti-spin 1s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated stars background -->
+    <div class="stars" id="stars"></div>
+
+    <!-- Decorative magic lamps -->
+    <div class="magic-lamp" style="top: 10%; left: 10%;">🌺</div>
+    <div class="magic-lamp" style="top: 20%; right: 15%;">✨</div>
+    <div class="magic-lamp" style="bottom: 15%; left: 15%;">🕌</div>
+    <div class="magic-lamp" style="bottom: 20%; right: 10%;">🌸</div>
+
+    <!-- Confetti Celebration Container -->
+    <div class="confetti-container" id="confettiContainer"></div>
+
+    <!-- Question Screen -->
+    <div class="question-screen" id="questionScreen">
+        <h1>✨ HAPPY VALENTINE'S DAY! ✨</h1>
+        <p>Don't make it WEIRD</p>
+        <div class="button-container">
+            <button class="yes-button" id="yesButton">Yes</button>
+            <button class="no-button" id="noButton">No</button>
+        </div>
+    </div>
+
+    <!-- Letter Screen -->
+    <div class="letter-screen" id="letterScreen">
+        <div class="envelope" id="envelope">
+            <div class="envelope-back">
+                <div class="envelope-flap"></div>
+                <div class="heart-seal"></div>
+                <div class="to-text">Wait thats KINDA tuff</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Screen (closed) -->
+    <div class="card-screen" id="cardScreen">
+        <div class="card-container">
+            <div class="card" id="card">
+                <div class="card-front">
+                    <h2>HAPPY</h2>
+                    <div class="valentine-text">Valentine's</div>
+                    <div class="day-text">DAY</div>
+                </div>
+                <div class="card-inside">
+                    <div class="date">WAITTTTTTTT</div>
+                    <div class="message">
+                        YOU CLICKED YES! THATS LIKE KINDA COOL!
+                    </div>
+                    <div class="signature">Yea. You're cool.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Opened Card Screen -->
+    <div class="opened-card-screen" id="openedCardScreen">
+        <div class="opened-card">
+            <div class="card-left">
+                <div class="decorative">💙</div>
+            </div>
+            <div class="card-right">
+                <div class="date">THANK YOUUU</div>
+                <div class="message">
+                    Sorry for being a horrible friend to you, you deserved none of that. I'm happy you've given me a second chance! I SWEAR I won't be a meanie to you anymore! 
+                    <br><br>
+                    Happy Valentine's Day! 💙✨
+                </div>
+                <div class="signature">Bom Bom Bom</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Instruction text -->
+    <div class="instruction" id="instruction">CLICK CLICK CLICK!</div>
+
+    <!-- Audio Control -->
+    <div class="audio-control" id="audioControl">🔊</div>
+
+    <!-- Background Music - MULTIPLE OPTIONS BELOW -->
+    
+    <!-- OPTION 1: Local MP3 file - NOW ACTIVE WITH YOUR SONG! -->
+    <audio id="audioPlayer" loop>
+        <source src="song.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- OPTION 2: Spotify Embed (RECOMMENDED - EASIEST) -->
+    <!-- Go to Spotify > Right click song > Share > Embed track > Copy the iframe code and paste it here -->
+    <!--
+    <iframe id="audioPlayer" style="display:none; position:absolute; width:0; height:0;" 
+            src="https://open.spotify.com/embed/track/1hwdPQtFHISvZ9SXMkNrIK?utm_source=generator&autoplay=1" 
+            frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+    -->
+
+    <!-- OPTION 3: Direct URL to MP3 (if you have one hosted online) -->
+    <!-- Not needed - using local MP3 file above -->
+    <!--
+    <audio id="audioPlayer" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+    -->
+
+    <!-- OPTION 4: YouTube embed (least reliable due to browser restrictions) -->
+    <!--
+    <iframe id="youtubePlayer" width="0" height="0" 
+            src="https://www.youtube.com/embed/EXTLJmYsaUQ?autoplay=1&start=53&loop=1&playlist=EXTLJmYsaUQ&controls=0&mute=0" 
+            frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="display:none;">
+    </iframe>
+    -->
+
+
+    <script>
+        // Create animated stars
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 50; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.width = Math.random() * 3 + 1 + 'px';
+            star.style.height = star.style.width;
+            star.style.animationDelay = Math.random() * 3 + 's';
+            starsContainer.appendChild(star);
+        }
+
+        // Get elements
+        const questionScreen = document.getElementById('questionScreen');
+        const letterScreen = document.getElementById('letterScreen');
+        const cardScreen = document.getElementById('cardScreen');
+        const openedCardScreen = document.getElementById('openedCardScreen');
+        const yesButton = document.getElementById('yesButton');
+        const noButton = document.getElementById('noButton');
+        const envelope = document.getElementById('envelope');
+        const card = document.getElementById('card');
+        const instruction = document.getElementById('instruction');
+        const audioControl = document.getElementById('audioControl');
+
+        let currentScreen = 'question';
+        let isMuted = false;
+        let noClickCount = 0;
+        // Removed maxNoClicks - NO button will move FOREVER!
+
+        // Initial YES button size
+        let yesFontSize = 1.5;
+        let yesPadding = 20;
+
+        // Position NO button initially
+        function positionNoButton() {
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+            
+            // Better positioning for mobile
+            if (screenWidth <= 768) {
+                noButton.style.left = '50%';
+                noButton.style.top = '60%';
+                noButton.style.transform = 'translateX(-50%)';
+            } else {
+                noButton.style.left = (screenWidth / 2 + 150) + 'px';
+                noButton.style.top = (screenHeight / 2) + 'px';
+                noButton.style.transform = 'none';
+            }
+        }
+
+        positionNoButton();
+        window.addEventListener('resize', positionNoButton);
+
+        // NO button hover/touch - move away and grow YES button (INFINITELY!)
+        function moveNoButton() {
+            noClickCount++;
+            
+            // Move NO button to random position
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+            const margin = 100;
+            
+            const randomX = margin + Math.random() * (screenWidth - 2 * margin - 200);
+            const randomY = margin + Math.random() * (screenHeight - 2 * margin - 100);
+            
+            noButton.style.left = randomX + 'px';
+            noButton.style.top = randomY + 'px';
+            
+            // Grow YES button (but cap it at a reasonable size)
+            if (yesFontSize < 4) { // Max size limit so it doesn't break the page
+                yesFontSize += 0.3;
+                yesPadding += 5;
+                yesButton.style.fontSize = yesFontSize + 'em';
+                yesButton.style.padding = yesPadding + 'px ' + (yesPadding * 2) + 'px';
+            }
+        }
+
+        // Desktop: mouseenter
+        noButton.addEventListener('mouseenter', moveNoButton);
+        
+        // Mobile: touchstart (fires before the button can be clicked)
+        noButton.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // Prevent default touch behavior
+            moveNoButton();
+        });
+        
+        // Also catch click attempts on mobile
+        noButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            moveNoButton();
+        });
+
+        // Yes button click - show letter
+        yesButton.addEventListener('click', () => {
+            questionScreen.classList.add('fade-out');
+            setTimeout(() => {
+                letterScreen.classList.add('show');
+                currentScreen = 'letter';
+                instruction.textContent = 'CLICK!';
+            }, 1000);
+        });
+
+        // Envelope click - open and show card
+        envelope.addEventListener('click', () => {
+            if (currentScreen === 'letter') {
+                envelope.classList.add('open');
+                setTimeout(() => {
+                    letterScreen.classList.remove('show');
+                    setTimeout(() => {
+                        cardScreen.classList.add('show');
+                        currentScreen = 'card';
+                        instruction.textContent = 'CLICK!';
+                    }, 500);
+                }, 800);
+            }
+        });
+
+        // Card click - open card with CONFETTI EXPLOSION! 🎉
+        card.addEventListener('click', () => {
+            if (currentScreen === 'card') {
+                card.classList.add('open');
+                
+                // Start confetti after card opens
+                setTimeout(() => {
+                    createConfettiExplosion();
+                }, 1500);
+                
+                setTimeout(() => {
+                    cardScreen.classList.remove('show');
+                    setTimeout(() => {
+                        openedCardScreen.classList.add('show');
+                        currentScreen = 'opened';
+                        instruction.style.opacity = '0';
+                        
+                        // Clear confetti after final card shows
+                        setTimeout(() => {
+                            clearConfetti();
+                        }, 3000);
+                    }, 4000); // Wait for confetti to finish
+                }, 1000);
+            }
+        });
+
+        // Confetti Explosion Functions 🎉🍫
+        const confettiContainer = document.getElementById('confettiContainer');
+        const confettiEmojis = ['🎉', '🎊', '✨', '💖', '💙', '💜', '⭐', '🌟'];
+        const chocolateEmojis = ['🍫', '🍬', '🍭', '🧁', '🎂', '🍰', '🍪', '🍩'];
+
+        function createConfettiExplosion() {
+            confettiContainer.classList.add('show');
+            
+            // Create 80 pieces of confetti and chocolates
+            for (let i = 0; i < 80; i++) {
+                setTimeout(() => {
+                    createConfettiPiece();
+                }, i * 30); // Stagger creation for better effect
+            }
+        }
+
+        function createConfettiPiece() {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            
+            // Randomly choose confetti or chocolate
+            const isChocolate = Math.random() > 0.5;
+            if (isChocolate) {
+                confetti.classList.add('chocolate');
+                confetti.textContent = chocolateEmojis[Math.floor(Math.random() * chocolateEmojis.length)];
+            } else {
+                confetti.textContent = confettiEmojis[Math.floor(Math.random() * confettiEmojis.length)];
+            }
+            
+            // Random position across the screen
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.top = '-50px';
+            
+            // Random animation duration for variety
+            const duration = 2 + Math.random() * 2;
+            confetti.style.animationDuration = duration + 's';
+            
+            // Random delay
+            confetti.style.animationDelay = Math.random() * 0.5 + 's';
+            
+            confettiContainer.appendChild(confetti);
+            
+            // Remove confetti after animation
+            setTimeout(() => {
+                confetti.remove();
+            }, (duration + 0.5) * 1000);
+        }
+
+        function clearConfetti() {
+            confettiContainer.classList.remove('show');
+            confettiContainer.innerHTML = '';
+        }
+
+        // Audio control
+        const audio = document.getElementById('audioPlayer');
+        let audioStarted = false;
+
+        // Try to play audio on first user interaction
+        function startAudio() {
+            if (!audioStarted && audio) {
+                audio.volume = 0.5; // Set volume to 50%
+                audio.currentTime = 0; // Start from beginning (change to 53 if your file supports it)
+                
+                // Try to play
+                const playPromise = audio.play();
+                
+                if (playPromise !== undefined) {
+                    playPromise
+                        .then(() => {
+                            console.log('Audio playing!');
+                            audioStarted = true;
+                        })
+                        .catch(error => {
+                            console.log('Audio blocked by browser:', error);
+                            // Show a message to user
+                            alert('Click the speaker icon (🔊) to play music!');
+                        });
+                }
+            }
+        }
+
+        // Audio control button
+        audioControl.addEventListener('click', () => {
+            if (!audio) {
+                alert('No audio source configured. Please add an MP3 file or use Spotify embed option in the HTML code.');
+                return;
+            }
+
+            if (!audioStarted) {
+                // First time clicking - start audio
+                startAudio();
+                audioControl.textContent = '🔊';
+                isMuted = false;
+            } else if (!isMuted) {
+                // Pause audio
+                audio.pause();
+                audioControl.textContent = '🔇';
+                isMuted = true;
+            } else {
+                // Resume audio
+                audio.play();
+                audioControl.textContent = '🔊';
+                isMuted = false;
+            }
+        });
+
+        // Try to start audio when YES button is clicked
+        const originalYesClick = yesButton.onclick;
+        yesButton.addEventListener('click', () => {
+            startAudio();
+        });
+    </script>
+</body>
+</html>
